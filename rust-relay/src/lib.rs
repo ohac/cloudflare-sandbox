@@ -7,9 +7,9 @@ use nostr::{
 use worker::*;
 
 #[event(fetch)]
-async fn fetch(_req: Request, _env: Env, _ctx: Context) -> Result<Response> {
+async fn fetch(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
     console_error_panic_hook::set_once();
-    let Ok(Some(upgrade)) = _req.headers().get("Upgrade") else {
+    let Ok(Some(upgrade)) = req.headers().get("Upgrade") else {
         return Response::ok("Hello");
     };
     if upgrade != "websocket" {
@@ -43,31 +43,33 @@ async fn fetch(_req: Request, _env: Env, _ctx: Context) -> Result<Response> {
                         },
                         ClientMessage::Req {
                             subscription_id,
-                            filters,
+                            filters: _,
                         } => {
                             let eose = RelayMessage::eose(subscription_id);
                             server.send_with_str(eose.as_json()).expect("send error");
                         }
                         ClientMessage::Count {
-                            subscription_id,
-                            filters,
+                            subscription_id: _,
+                            filters: _,
                         } => todo!(),
                         ClientMessage::Close(_) => todo!(),
                         ClientMessage::Auth(_) => todo!(),
                         ClientMessage::NegOpen {
-                            subscription_id,
-                            filter,
-                            id_size,
-                            initial_message,
+                            subscription_id: _,
+                            filter: _,
+                            id_size: _,
+                            initial_message: _,
                         } => todo!(),
                         ClientMessage::NegMsg {
-                            subscription_id,
-                            message,
+                            subscription_id: _,
+                            message: _,
                         } => todo!(),
-                        ClientMessage::NegClose { subscription_id } => todo!(),
+                        ClientMessage::NegClose {
+                            subscription_id: _,
+                        } => todo!(),
                     }
                 }
-                WebsocketEvent::Close(event) => console_log!("Closed!"),
+                WebsocketEvent::Close(_event) => console_log!("Closed!"),
             }
         }
     });
